@@ -1,9 +1,6 @@
-
-
-
-import { allPosts } from '../queries/posts'
-import Link from 'next/link'
-import {HygraphClient} from '@/utils/client'
+import { allPosts } from '../queries/posts';
+import Link from 'next/link';
+import {HygraphClient} from '@/utils/client';
 async function getPosts() {
   const client = HygraphClient()
   const allPosts = await client.request(allPosts)
