@@ -23,7 +23,7 @@ def contar_pares():
     return contar
 
 def calcular_media():
-    if len(list)== :
+    if len(list)== 0 :
         return 0 
     soma=sum(list)
     media=soma/len(list)
