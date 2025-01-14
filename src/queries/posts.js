@@ -1,7 +1,7 @@
 async function getPosts() {
     const client = HygraphClient()
-    const allPosts = await client.request(AllPosts)
-    return allPosts.posts
+    const AllPosts = await client.request(AllPosts)
+    return AllPosts.posts
    }
    
    import { GraphQLClient } from "graphql-request";
