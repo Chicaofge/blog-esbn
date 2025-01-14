@@ -8,8 +8,6 @@ const nextConfig = {
         hostname: '**.graphassets.com',
       },
     ],
-    // Deprecate domain after asset migration
-    domains: ['media.graphassets.com']
   },
   experimental: {
     workerThreads: false,

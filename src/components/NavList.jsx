@@ -12,46 +12,62 @@ import { SingleNav } from '@/queries/navigations'
  * @throws Will throw an error if the fetch request encounters any errors.
  */
 async function getNav(navId) {
-  const res = await fetch(process.env.HYGRAPH_ENDPOINT, {
+  const endpoint = process.env.HYGRAPH_ENDPOINT;
+  if (!endpoint) {
+    throw new Error('HYGRAPH_ENDPOINT is not defined');
+  }
+
+  const res = await fetch(endpoint, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      query: SingleNav,
-      variables: { navId: navId }
-    })
-  }).then((res) => 
-  res.json())
-  if (res.errors) {
-    console.error(res.errors)
-    throw new Error(res.errors[0].message)
+      query: `
+        query GetNavigation($id: ID!) {
+          nav(where: { id: $id }) {
+            link {
+              id
+              displayText
+              externalUrl
+              page {
+                slug
+              }
+            }
+          }
+        }
+      `,
+      variables: { id: navId },
+    }),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    console.error('Fetch error:', res.status, res.statusText, errorText);
+    throw new Error(`Failed to fetch navigation data: ${res.status} ${res.statusText} - ${errorText}`);
   }
-  console.log(res.data.navigation.link)
-  return res.data.navigation.link
+
+  const data = await res.json();
+  if (!data.data || !data.data.nav) {
+    throw new Error('Navigation data is undefined');
+  }
+
+  console.log(data.data.nav.link);
+  return data.data.nav.link;
 }
 
-/**
- * A Next.js component that renders a list of links from a navigation.
- *
- * This component expects a single prop, `navId`, which is the ID of the navigation to
- * retrieve from Hygraph.
- *
- * @param {Object} props
- * @prop {string} navId - The ID of the navigation to retrieve from Hygraph
- */
 export default async function NavList({ navId }) {
-  const navItems = await getNav(navId)
+  const navItems = await getNav(navId);
   return (
     <>
       {navItems.map((navItem) => {
-        const url = navItem?.externalUrl ? navItem.externalUrl : `/${navItem.page.slug}`
+        const url = navItem?.externalUrl ? navItem.externalUrl : `/${navItem.page.slug}`;
         return (
           <li key={navItem.id}>
             <Link href={`${url}`}>{navItem.displayText}</Link>
           </li>
-        )
+        );
       })}
     </>
-  )
+  );
 }
