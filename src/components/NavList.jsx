@@ -17,6 +17,38 @@ async function getNav(navId) {
     throw new Error('HYGRAPH_ENDPOINT is not defined');
   }
 
+  // Introspection query to fetch available fields in the Query type
+  const introspectionQuery = `
+    {
+      __schema {
+        queryType {
+          fields {
+            name
+          }
+        }
+      }
+    }
+  `;
+
+  const introspectionRes = await fetch(endpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query: introspectionQuery }),
+  });
+
+  if (!introspectionRes.ok) {
+    const errorText = await introspectionRes.text();
+    console.error('Introspection fetch error:', introspectionRes.status, introspectionRes.statusText, errorText);
+    throw new Error(`Failed to fetch introspection data: ${introspectionRes.status} ${introspectionRes.statusText} - ${errorText}`);
+  }
+
+  const introspectionData = await introspectionRes.json();
+  const queryFields = introspectionData.data.__schema.queryType.fields.map(field => field.name);
+  console.log('Available query fields:', queryFields);
+
+  // Original query to fetch navigation data
   const res = await fetch(endpoint, {
     method: 'POST',
     headers: {
@@ -25,7 +57,7 @@ async function getNav(navId) {
     body: JSON.stringify({
       query: `
         query GetNavigation($id: ID!) {
-          nav(where: { id: $id }) {
+          Navigation(where: { id: $id }) {
             link {
               id
               displayText
@@ -48,12 +80,12 @@ async function getNav(navId) {
   }
 
   const data = await res.json();
-  if (!data.data || !data.data.nav) {
+  if (!data.data || !data.data.Navigation) {
     throw new Error('Navigation data is undefined');
   }
 
-  console.log(data.data.nav.link);
-  return data.data.nav.link;
+  console.log(data.data.Navigation.link);
+  return data.data.Navigation.link;
 }
 
 export default async function NavList({ navId }) {
