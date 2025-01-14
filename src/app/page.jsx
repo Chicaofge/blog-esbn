@@ -18,16 +18,18 @@ export default async function Home({}) {
     <div className="divide-y divide-gray-200">
       <div className="pt-6 pb-8 space-y-2 md:space-y-5">
         <h1 className="text-3xl leading-9 font-extrabold text-gray-900 tracking-tight sm:text-4xl sm:leading-10 md:text-6xl md:leading-14">
-          Bog Boa Nova
+          Blog Boa Nova
         </h1>
         <p className="text-lg leading-7 text-gray-500">
           As Publicações mais recentes
         </p>
       </div>
+      </div>)}
+    
 
       {/* Lista de posts */}
       <ul className="divide-y divide-gray-200">
-        {allPosts.map((post=>{
+        {allPosts.map((post)=>{
           return (
             <li key={post.id} className="py-12">
             <article className="space-y-2 xl:grid xl:grid-colsl4 xl:space-y-0 xl:items-baseline">
@@ -45,12 +47,30 @@ export default async function Home({}) {
             </dl>
             <div className="space-y-5 xl:col-span-3">
               <div className="space-y-6">
-                <h2 className="text-2xl leading-8 font-bold tracking.tight"></h2>
+                <h2 className="text-2xl leading-8 font-bold tracking.tight">
+              < Link
+                href={`/posts/${post.slug}`}
+                className="text-gray-900"
+            >
+                {post.title}
+            </Link>
+            </h2>
+          { post.excerpt && (
+            <div className="prose max-w-none text-gray-500"> {post.excerpt}
+            </div>
+        )}
+            </div>
+            <div className="text-base leading-6 font-medium">
+              <Link
+                  href={`/posts/${post.slug}`}
+                  className="text-purple-500 hover: text-purple-600" aria-label={`Read "${post.title}"`}
+              >
+                  Ler Mais &rarr;
+              </Link>
               </div>
               </div>
-          
-        
-        </ul>"
-    </div>
-  )
-}
+              </article>
+              </li>
+      )
+    })}
+</ul>
