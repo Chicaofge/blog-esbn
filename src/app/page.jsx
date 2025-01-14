@@ -6,9 +6,9 @@ import Link from 'next/link'
 import {HygraphClient} from '@/utils/client'
 async function getPosts() {
   const client = HygraphClient()
-  const AllPosts = await client.request(AllPosts)
-  console.log(AllPosts)
-  return AllPosts.posts
+  const allPosts = await client.request(allPosts)
+  console.log(allPosts)
+  return allPosts.posts
 }
 
 export const metadata = {
